@@ -10,6 +10,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -50,6 +52,27 @@ public class PlantGameClient {
             toServer.flush();
             } catch (Exception e) {
                 
+            }
+            boolean loopForInput = true;
+            while (loopForInput)
+            try {
+                System.out.println(fromServer.readUTF());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                loopForInput = false;
+            } catch (IOException ex) {
+                Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            for (int j = 0; j < 4; j++) {
+                try {
+                    toServer.writeInt(input.nextInt());
+                    toServer.flush();
+                } catch (Exception e) {
+                }
             }
         }
     }
