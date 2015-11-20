@@ -53,25 +53,28 @@ public class PlantGameClient {
             } catch (Exception e) {
                 
             }
-            boolean loopForInput = true;
-            while (loopForInput)
-            try {
-                System.out.println(fromServer.readUTF());
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                loopForInput = false;
-            } catch (IOException ex) {
-                Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
             
+            
+            //^^instantiating game info
+
             for (int j = 0; j < 4; j++) {
                 try {
-                    toServer.writeInt(input.nextInt());
-                    toServer.flush();
-                } catch (Exception e) {
+                    System.out.println(fromServer.readUTF());
+                } catch (IOException ex) {
+                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                for (int k = 0; k < 2; k++) {
+                    try {
+                        toServer.writeInt(input.nextInt());
+                        toServer.flush();
+                    } catch (Exception e) {
+                    }
+                }
+                try {
+                    System.out.println(fromServer.readUTF());
+                    System.out.println(fromServer.readUTF());
+                } catch (IOException ex) {
+                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
