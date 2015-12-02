@@ -25,6 +25,8 @@ public class PlantGameClient {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        
         try {
           // Create a socket to connect to the server
             Socket socket = new Socket("localhost", 8000);
@@ -32,6 +34,15 @@ public class PlantGameClient {
                       // Create an input stream to receive data from the server
             fromServer = new DataInputStream(socket.getInputStream()); // Create an output stream to send data to the server
             toServer = new DataOutputStream(socket.getOutputStream()); 
+            new Thread(() -> {
+            while(true) {
+                try {
+                    System.out.println(fromServer.readUTF());
+                } catch (IOException ex) {
+                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
             
         } catch (IOException ex) {
         }
@@ -58,11 +69,6 @@ public class PlantGameClient {
             //^^instantiating game info
 
             for (int j = 0; j < 4; j++) {
-                try {
-                    System.out.println(fromServer.readUTF());
-                } catch (IOException ex) {
-                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
                 for (int k = 0; k < 2; k++) {
                     try {
                         toServer.writeInt(input.nextInt());
@@ -70,12 +76,26 @@ public class PlantGameClient {
                     } catch (Exception e) {
                     }
                 }
+                //NOW START ATTACK ROUND VVVVVV
+                int attackRoundMove = input.nextInt();
                 try {
-                    System.out.println(fromServer.readUTF());
-                    System.out.println(fromServer.readUTF());
+                toServer.writeInt(attackRoundMove);
+                    if (attackRoundMove == 1) {
+                        int playerToAttack = input.nextInt();
+                        toServer.writeInt(playerToAttack);
+                        int resourceToAttack = input.nextInt();
+                        toServer.writeInt(resourceToAttack);
+                    }
+                    
                 } catch (IOException ex) {
                     Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+//                try {
+//                    System.out.println(fromServer.readUTF());
+//                } catch (IOException ex) {
+//                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+//                }
             }
         }
     }
