@@ -29,11 +29,12 @@ public class PlantGameClient {
         
         try {
           // Create a socket to connect to the server
-            Socket socket = new Socket("localhost", 8000);
+            Socket socketOut = new Socket("localhost", 8001);
+            Socket socketIn = new Socket("localhost", 8000);
             //Socket socket = new Socket("192.168.0.9", 8000);
                       // Create an input stream to receive data from the server
-            fromServer = new DataInputStream(socket.getInputStream()); // Create an output stream to send data to the server
-            toServer = new DataOutputStream(socket.getOutputStream()); 
+            fromServer = new DataInputStream(socketIn.getInputStream()); // Create an output stream to send data to the server
+            toServer = new DataOutputStream(socketOut.getOutputStream()); 
             new Thread(() -> {
             while(true) {
                 try {
@@ -42,10 +43,39 @@ public class PlantGameClient {
                     Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }).start();
+            }).start();
+            new Thread(() -> {
+                if (toServer != null) {
+                    Scanner input = new Scanner(System.in);
+                    while(true) {
+                        
+                        String asString = input.nextLine();
+                        try {
+                            int asInt = Integer.parseInt(asString);
+                            try {
+                                toServer.writeInt(asInt);
+                                toServer.flush();
+                            } catch (IOException ex) {
+                                Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        catch(NumberFormatException nFE) {
+                            try {
+                                toServer.writeUTF(asString);
+                                toServer.flush();
+                            } catch (IOException ex) {
+                                Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                        }
+                    }
+                }
+            }).start();
             
         } catch (IOException ex) {
         }
+        
+        /*
         
         if (toServer != null) {
             Scanner input = new Scanner(System.in);
@@ -67,37 +97,38 @@ public class PlantGameClient {
             
             
             //^^instantiating game info
-
-            for (int j = 0; j < 4; j++) {
-                for (int k = 0; k < 2; k++) {
+            for (int s = 0; s < 4; s++) {
+                for (int j = 0; j < 4; j++) {
+                    for (int k = 0; k < 2; k++) {
+                        try {
+                            toServer.writeInt(input.nextInt());
+                            toServer.flush();
+                        } catch (Exception e) {
+                        }
+                    }
+                    //NOW START ATTACK ROUND VVVVVV
+                    int attackRoundMove = input.nextInt();
                     try {
-                        toServer.writeInt(input.nextInt());
-                        toServer.flush();
-                    } catch (Exception e) {
+                    toServer.writeInt(attackRoundMove);
+                        if (attackRoundMove == 1) {
+                            int playerToAttack = input.nextInt();
+                            toServer.writeInt(playerToAttack);
+                            int resourceToAttack = input.nextInt();
+                            toServer.writeInt(resourceToAttack);
+                        }
+
+                    } catch (IOException ex) {
+                        Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
+    //                try {
+    //                    System.out.println(fromServer.readUTF());
+    //                } catch (IOException ex) {
+    //                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
+    //                }
                 }
-                //NOW START ATTACK ROUND VVVVVV
-                int attackRoundMove = input.nextInt();
-                try {
-                toServer.writeInt(attackRoundMove);
-                    if (attackRoundMove == 1) {
-                        int playerToAttack = input.nextInt();
-                        toServer.writeInt(playerToAttack);
-                        int resourceToAttack = input.nextInt();
-                        toServer.writeInt(resourceToAttack);
-                    }
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
-//                try {
-//                    System.out.println(fromServer.readUTF());
-//                } catch (IOException ex) {
-//                    Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
-//                }
             }
-        }
+        }*/
     }
     
 }
