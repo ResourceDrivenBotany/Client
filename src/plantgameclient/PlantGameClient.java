@@ -35,6 +35,8 @@ public class PlantGameClient {
                       // Create an input stream to receive data from the server
             fromServer = new DataInputStream(socketIn.getInputStream()); // Create an output stream to send data to the server
             toServer = new DataOutputStream(socketOut.getOutputStream()); 
+            
+            
             new Thread(() -> {
             while(true) {
                 try {
@@ -44,29 +46,32 @@ public class PlantGameClient {
                 }
             }
             }).start();
+            
             new Thread(() -> {
                 if (toServer != null) {
                     Scanner input = new Scanner(System.in);
                     while(true) {
-                        
-                        String asString = input.nextLine();
+                        String asString = input.nextLine().trim();
+                        System.out.println(asString);
                         try {
                             int asInt = Integer.parseInt(asString);
+                            System.out.println(asInt);
                             try {
                                 toServer.writeInt(asInt);
                                 toServer.flush();
+                                System.out.println("sent as int " + asInt);
                             } catch (IOException ex) {
                                 Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         catch(NumberFormatException nFE) {
+                            System.out.println("sentAsString");
                             try {
                                 toServer.writeUTF(asString);
                                 toServer.flush();
                             } catch (IOException ex) {
                                 Logger.getLogger(PlantGameClient.class.getName()).log(Level.SEVERE, null, ex);
                             }
-
                         }
                     }
                 }
